@@ -12,7 +12,7 @@ export const Write = () => {
   ];
 
   return (
-    <main className="w-full relative h-[100vh] flex justify-center items-center">
+    <main className="w-full h-[100vh] flex justify-center items-center relative shrink-0">
       <div className="flex flex-col gap-3 w-[70%] max-w-[1020px]">
         <input
           placeholder="일기를 작성해주세요..."
