@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "WantedSansEBB";
+  font-weight: ExtraBlack;
+  font-style: normal;
+  src: url("./assets/fonts/WantedSans-ExtraBlack.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "WantedSansBB";
+  font-weight: Black;
+  font-style: normal;
+  src: url("./assets/fonts/WantedSans-Black.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "WantedSansEB";
+  font-weight: ExtraBold;
+  font-style: normal;
+  src: url("./assets/fonts/WantedSans-ExtraBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "WantedSansB";
+  font-weight: Bold;
+  font-style: normal;
+  src: url("./assets/fonts/WantedSans-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "WantedSansSB";
+  font-weight: SemiBold;
+  font-style: normal;
+  src: url("./assets/fonts/WantedSans-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "WantedSansM";
+  font-weight: Medium;
+  font-style: normal;
+  src: url("./assets/fonts/WantedSans-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "WantedSansR";
+  font-weight: Regular;
+  font-style: normal;
+  src: url("./assets/fonts/WantedSans-Regular.ttf") format("truetype");
+}
