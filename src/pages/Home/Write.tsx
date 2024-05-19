@@ -1,6 +1,13 @@
-import { Icon } from "@iconify/react";
+import { Button } from "../../components/common";
 
 const days = ["일", "월", "화", "수", "목", "금", "토"];
+const size = {
+  px: 2,
+  py: 1,
+  icon: 20,
+  text: 10,
+  gap: 1,
+};
 
 export const Write = () => {
   const _date = new Date();
@@ -20,18 +27,12 @@ export const Write = () => {
         />
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-3 select-none">
-            <button className="flex items-center gap-1 border-[3px] px-2 py-1 border-[#2c2c2c] hover:opacity-50 transition-all duration-200 ease-in-out">
-              <Icon icon="mingcute:time-fill" color="#2c2c2c" width={20} />
-              <span className="font-['WantedSansB'] text-[#2c2c2c]">
-                타임스탬프
-              </span>
-            </button>
-            <button className="flex items-center gap-1 border-[3px] px-2 py-1 border-[#2c2c2c] hover:opacity-50 transition-all duration-200 ease-in-out">
-              <Icon icon="material-symbols:check" color="#2c2c2c" width={20} />
-              <span className="font-['WantedSansB'] text-[#2c2c2c]">
-                작성 완료
-              </span>
-            </button>
+            <Button icon="mingcute:time-fill" size={size}>
+              타임스탬프
+            </Button>
+            <Button icon="material-symbols:check" size={size}>
+              작성 완료
+            </Button>
           </div>
           <div className="flex items-center gap-1 border-[3px] px-2 py-1 border-[#2c2c2c]">
             <span className="font-['WantedSansB'] text-[#2c2c2c]">
