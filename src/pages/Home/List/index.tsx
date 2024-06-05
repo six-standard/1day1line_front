@@ -1,56 +1,16 @@
-import { useSection } from "../../hooks/useSection";
-import { Button } from "../../components/common";
+import { useSection } from "../../../hooks/useSection";
+import { Button } from "../../../components/common";
+import { days } from "../../../utils/date";
+import { Item } from "./components";
 import { Icon } from "@iconify/react";
+import { data } from "./constants";
 import { useState } from "react";
 import dayjs from "dayjs";
-import { days } from "../../utils/date";
-
-interface PropType {
-  children: string;
-  bold?: boolean;
-  red?: boolean;
-}
-
-const TextBox = ({ children, bold, red }: PropType) => {
-  return (
-    <span
-      className={`${
-        bold ? "font-[WantedSansSB]" : "font-[WantedSansR]"
-      } text-[18px] inline-block w-10 h-10 text-center content-center ${
-        red ? "text-[#D60000]" : "text-[#2C2C2C]"
-      }`}
-    >
-      {children}
-    </span>
-  );
-};
 
 export const List = () => {
   const { section } = useSection();
   const [opened, setOpened] = useState(undefined);
-  const [date, setDate] = useState([dayjs().year(), 5]);
-
-  const getDateList = () => {
-    const _date = dayjs(`${date.join("-")}-01`);
-    const start = _date.startOf("month").day();
-    const end = _date.daysInMonth();
-    const len = start + end;
-    let cals = Array.from(
-      { length: len % 7 === 0 ? len : len + (7 - (len % 7)) },
-      (_, j) => (j < start || j - start + 1 > end ? 0 : j - start + 1)
-    );
-    let dates = [];
-
-    for (let i = 0; i < cals.length / 7; i++) {
-      let tmp: number[] = [];
-      for (let j = 7 * i; j < 7 * (i + 1); j++) {
-        tmp.push(cals[j]);
-      }
-      dates.push(tmp);
-    }
-
-    return dates;
-  };
+  const [date, setDate] = useState([dayjs().year(), dayjs().month() + 1]);
 
   const handleClick = (e: any) =>
     setOpened(!(opened === e.target.id) ? e.target.id : undefined);
@@ -69,20 +29,42 @@ export const List = () => {
 
   return (
     <main
-      className={`w-full h-[100vh] ${
-        section === true ? "translate-x-[-100%]" : ""
-      } bg-[#ebebeb] flex justify-center relative shrink-0 transition-all duration-500 ease-in-out`}
+      className={`w-[100%] relative overflow-y-scroll h-[100vh] bg-[#ebebeb] transition-[margin-left] duration-500 flex justify-center shrink-0 ${
+        section === true ? "ml-[-100%]" : "ml-0"
+      }`}
     >
-      <div className="absolute left-20 bottom-20 flex gap-3 flex-col items-start">
+      <div className="w-full items-center pt-[calc(50vh)] pb-[50vh] flex absolute flex-col gap-10">
+        {Array.from({
+          length: dayjs(`${date.join("-")}-1`).daysInMonth(),
+        }).map((_, index: number) => {
+          const tmp = data.find((i) => i.date === index + 1);
+          if (tmp) {
+            return (
+              <Item
+                date={[...date, index + 1]}
+                day={days[dayjs(`${date.join("-")}-${index + 1}`).day()]}
+                content={tmp.texts[tmp.first]}
+              />
+            );
+          } else {
+            return <div className="w-3 h-3 bg-[#2C2C2C]" />;
+          }
+        })}
+      </div>
+      <div
+        className={`fixed transition-all duration-[500ms] ${
+          section === true ? "left-20" : "left-[calc(100%+5rem)]"
+        } bottom-20 flex gap-2 flex-col items-start`}
+      >
         <div className="relative">
           {opened === "share" && (
-            <div className="absolute w-max bottom-8 flex gap-2 items-center mb-3 px-4 py-3 border-[3px] border-[#2c2c2c]">
+            <div className="absolute bg-[#EBEBEB] w-max bottom-8 flex gap-2 items-center mb-3 px-4 py-3 border-[3px] border-[#2c2c2c]">
               <Icon
                 icon="material-symbols:link"
                 width={25}
                 className="cursor-pointer"
               />
-              <span>
+              <span className="select-text">
                 http://www.1day1line.kro.kr/share?uuid=111111-111111-111111-111111-11111
               </span>
             </div>
@@ -98,7 +80,7 @@ export const List = () => {
         </div>
         <div className="relative">
           {opened === "date" && (
-            <div className=" w-max bottom-8 bg-[#ebebeb] absolute flex gap-1 items-center flex-col mb-3 px-4 py-3 border-[3px] border-[#2c2c2c]">
+            <div className=" w-max bottom-8 bg-[#ebebeb] absolute flex gap-[1px] items-center flex-col mb-3 px-4 py-3 border-[3px] border-[#2c2c2c]">
               <div className="flex items-center gap-7">
                 <Icon
                   icon="ep:arrow-up-bold"
@@ -118,24 +100,6 @@ export const List = () => {
                   width={15}
                 />
               </div>
-              <div>
-                {days.map((i, j) => (
-                  <TextBox bold key={j} red={j === 0}>
-                    {i}
-                  </TextBox>
-                ))}
-                {getDateList().map((i, j) => {
-                  return (
-                    <div key={j}>
-                      {i.map((n, m) => (
-                        <TextBox key={m} red={m === 0}>
-                          {n === 0 ? "ㅤ" : n.toString()}
-                        </TextBox>
-                      ))}
-                    </div>
-                  );
-                })}
-              </div>
             </div>
           )}
           <Button
@@ -144,7 +108,7 @@ export const List = () => {
             id="date"
             icon="mingcute:calendar-fill"
           >
-            날짜로 검색
+            기간 선택
           </Button>
         </div>
 
