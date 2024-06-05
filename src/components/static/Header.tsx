@@ -1,16 +1,17 @@
 import { Icon } from "@iconify/react";
 import { useSection } from "../../hooks/useSection";
+import { useLocation } from "react-router-dom";
 
 export const Header = () => {
   const { section, move } = useSection();
-  const type: string = "share";
+  const { pathname } = useLocation();
 
   return (
-    <header className="fixed w-full h-[100px] px-8 bg-[#EBEBEB] flex items-center justify-between z-10">
+    <header className="fixed w-full h-[100px] px-8 bg-[#EBEBEB] flex items-center z-10">
       <span className="inline w-32 text-[#2C2C2C] font-['WantedSansB'] text-[30px] select-none">
         하루한줄
       </span>
-      {type === "own" ? (
+      {!pathname.split("/").includes("share") ? (
         <div className="w-[95%] flex justify-between items-center">
           <Icon
             icon="uiw:setting"
@@ -36,7 +37,9 @@ export const Header = () => {
           </div>
         </div>
       ) : (
-        <span>six-standard님의 일기</span>
+        <span className="font-[WantedSansB] text-[20px] text-[#2C2C2C]">
+          six-standard님의 일기
+        </span>
       )}
     </header>
   );
