@@ -6,6 +6,6 @@ type HookType = {
 };
 
 export const useSection = create<HookType>((set) => ({
-  section: true,
+  section: false,
   move: () => set((state) => ({ section: !state.section })),
 }));
