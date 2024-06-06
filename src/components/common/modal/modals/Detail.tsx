@@ -29,10 +29,15 @@ export const Detail = ({ date }: PropType) => {
             className="cursor-pointer hover:opacity-50 transition-all duration-150"
           />
         </div>
-        {datas?.texts.map((i) => (
+        {datas?.texts.map((i, index) => (
           <div className="font-[WantedSansR] text-[20px] border-[3px] border-[#2C2C2C] w-full px-3 py-2 flex justify-between items-center">
             <span>{i}</span>
-            <Icon icon="" />
+            <Icon
+              icon="mdi:crown"
+              width={30}
+              color={datas?.first === index ? "#2C2C2C" : "#A8A8A8"}
+              className="cursor-pointer"
+            />
           </div>
         ))}
       </div>
