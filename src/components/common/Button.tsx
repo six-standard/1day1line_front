@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react";
 
 interface PropType
-  extends Partial<Omit<HTMLButtonElement, "children" | "onClick">> {
+  extends Partial<Omit<HTMLButtonElement, "children" | "onClick" | "onClick">> {
   children: string;
   icon: string;
   size?: {
