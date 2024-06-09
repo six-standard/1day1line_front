@@ -10,7 +10,7 @@ export const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!cookie.get("accessToken")) {
+    if (!cookie.get("email")) {
       navigate("/onboard");
     }
   }, []);
