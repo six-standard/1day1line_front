@@ -2,10 +2,21 @@ import { ChangeEvent, useState } from "react";
 import { Button } from "../../components/common";
 import { days } from "../../utils/date";
 import dayjs from "dayjs";
+import { user, write } from "../../apis";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 const date = dayjs();
 
 export const Write = () => {
   const [content, setContent] = useState("");
+  const queryclient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: async () => write(content),
+    onSuccess: () => {
+      queryclient.invalidateQueries({ queryKey: ["list"] });
+      setContent("");
+    },
+  });
 
   return (
     <main className="w-[100%] h-[100vh] flex justify-center items-center shrink-0">
@@ -36,7 +47,9 @@ export const Write = () => {
             >
               타임스탬프
             </Button>
-            <Button icon="material-symbols:check">작성 완료</Button>
+            <Button icon="material-symbols:check" onClick={() => mutate()}>
+              작성 완료
+            </Button>
           </div>
           <div className="flex items-center gap-1 border-[3px] px-2 py-1 border-[#2c2c2c]">
             <span className="font-['WantedSansB'] text-[#2c2c2c]">

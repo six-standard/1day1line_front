@@ -10,8 +10,7 @@ export const Onboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(cookie.get("email"));
-    if (cookie.get("email")) {
+    if (cookie.get("uuid")) {
       navigate("/");
     }
   }, []);

@@ -3,17 +3,57 @@ import { Button } from "../../../components/common";
 import { days } from "../../../utils/date";
 import { Item } from "./components";
 import { Icon } from "@iconify/react";
-import { data } from "./constants";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import dayjs from "dayjs";
+import { list, search, user } from "../../../apis";
+import { Cookies } from "react-cookie";
+import { useQuery } from "@tanstack/react-query";
+
+let debounce: any = undefined;
+
+interface itemType {
+  date: number;
+  content: string;
+}
+
+interface searchType {
+  content: string;
+  date: string;
+  id: number;
+  isTop: boolean;
+  writerId: string;
+}
+
+const cookie = new Cookies();
 
 export const List = () => {
   const { section } = useSection();
   const [opened, setOpened] = useState(undefined);
   const [date, setDate] = useState([dayjs().year(), dayjs().month() + 1]);
+  const [searchData, setSearchData] = useState("");
 
-  const handleClick = (e: any) =>
+  const { data } = useQuery({
+    queryKey: ["list", date.join("-")],
+    queryFn: () => list(date[0], date[1]),
+    select: (res) => res.data,
+  });
+
+  const { data: password } = useQuery({
+    queryKey: ["password"],
+    queryFn: user,
+    select: (res) => res.data.password,
+  });
+
+  const { data: find } = useQuery({
+    queryKey: ["search", searchData],
+    queryFn: () => search(searchData),
+    select: (res) => res.data,
+  });
+
+  const handleClick = (e: any) => {
     setOpened(!(opened === e.target.id) ? e.target.id : undefined);
+    setSearchData("");
+  };
 
   const handleMoveDate = (to: boolean) => {
     //false: 왼, true: 오
@@ -33,23 +73,42 @@ export const List = () => {
         section === true ? "ml-[-100%]" : "ml-0"
       }`}
     >
-      <div className="w-full items-center pt-[calc(50vh)] pb-[50vh] flex absolute flex-col gap-10">
-        {Array.from({
-          length: dayjs(`${date.join("-")}-1`).daysInMonth(),
-        }).map((_, index: number) => {
-          const tmp = data.find((i) => i.date === index + 1);
-          if (tmp) {
-            return (
-              <Item
-                date={[...date, index + 1]}
-                day={days[dayjs(`${date.join("-")}-${index + 1}`).day()]}
-                content={tmp.texts[tmp.first]}
-              />
-            );
-          } else {
-            return <div className="w-3 h-3 bg-[#2C2C2C]" />;
-          }
-        })}
+      <div className="w-full items-center pt-[50vh] pb-[50vh] flex absolute flex-col gap-10">
+        {find === null ? (
+          Array.from({
+            length: dayjs(`${date.join("-")}-1`).daysInMonth(),
+          }).map((_, index: number) => {
+            const tmp = data?.find((i: itemType) => i.date === index + 1);
+            if (tmp) {
+              return (
+                <Item
+                  date={[...date, index + 1]}
+                  day={days[dayjs(`${date.join("-")}-${index + 1}`).day()]}
+                  content={tmp.content}
+                />
+              );
+            } else {
+              return <div className="w-3 h-3 bg-[#2C2C2C]" />;
+            }
+          })
+        ) : find?.length === 0 ? (
+          <span className="font-[wantedSansEB] text-[30px]">
+            검색 결과가 없습니다
+          </span>
+        ) : (
+          <div className="flex flex-col items-center gap-2  w-full ">
+            {find?.map((i: searchType) => (
+              <div className="px-4 py-3 border-[3px] border-[#2C2C2C] flex flex-col gap-1 w-[70%]">
+                <span className="font-[WantedSansB] text-[20px]">
+                  {dayjs(i.date).format("YYYY-MM-DD")}
+                </span>
+                <span className="font-[WantedSansM] text-[18px]">
+                  {i.content}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       <div
         className={`fixed transition-all duration-[500ms] ${
@@ -58,15 +117,26 @@ export const List = () => {
       >
         <div className="relative">
           {opened === "share" && (
-            <div className="absolute bg-[#EBEBEB] w-max bottom-8 flex gap-2 items-center mb-3 px-4 py-3 border-[3px] border-[#2c2c2c]">
+            <div className="absolute bg-[#EBEBEB] w-max bottom-8 flex gap-2 mb-3 px-4 py-3 border-[3px] border-[#2c2c2c]">
               <Icon
                 icon="material-symbols:link"
                 width={25}
                 className="cursor-pointer"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(
+                    `http://localhost:5173/share?uuid=${cookie.get("uuid")}`
+                  );
+                  alert("클립보드에 복사되었습니다");
+                }}
               />
-              <span className="select-text">
-                http://www.1day1line.kro.kr/share?uuid=111111-111111-111111-111111-11111
-              </span>
+              <div className="flex flex-col gap-1">
+                <span className="select-text font-[wantedSansM]">
+                  http://localhost:5173/share?uuid={cookie.get("uuid")}
+                </span>
+                <span className="select-text font-[wantedSansM] text-[13px]">
+                  비밀번호: {password}
+                </span>
+              </div>
             </div>
           )}
           <Button
@@ -117,6 +187,12 @@ export const List = () => {
             <div className="bottom-8 bg-[#ebebeb] absolute flex gap-2 items-center mb-3 px-4 py-3 border-[3px] border-[#2c2c2c]">
               <Icon icon="material-symbols:search" width={23} />
               <input
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  clearTimeout(debounce);
+                  debounce = setTimeout(() => {
+                    setSearchData(e.target.value);
+                  }, 600);
+                }}
                 placeholder="내용으로 검색"
                 className="bg-transparent outline-none w-[500px]"
               />
