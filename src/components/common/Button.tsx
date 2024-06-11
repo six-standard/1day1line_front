@@ -30,7 +30,7 @@ export const Button = ({
     <button
       onClick={onClick}
       className={
-        `font-['WantedSansB'] ${`text-[${size.text}px]`} text-[#2c2c2c] flex items-center ${`gap-${size.gap}`} ${`px-${size.px}`} ${`py-${size.py}`} border-[#2c2c2c] border-[3px] ${
+        `font-['WantedSansB'] bg-[#ebebeb] ${`text-[${size.text}px]`} text-[#2c2c2c] flex items-center ${`gap-${size.gap}`} ${`px-${size.px}`} ${`py-${size.py}`} border-[#2c2c2c] border-[3px] ${
           (selected || disabled) && "opacity-50"
         } hover:opacity-50 transition-all duration-200 ease-in-out ` + className
       }

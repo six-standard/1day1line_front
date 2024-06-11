@@ -1,10 +1,18 @@
 import { Icon } from "@iconify/react";
 import { useSection } from "../../hooks/useSection";
 import { useLocation } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { user } from "../../apis";
 
 export const Header = () => {
   const { section, move } = useSection();
   const { pathname } = useLocation();
+
+  const { data: name } = useQuery({
+    queryKey: ["password"],
+    queryFn: user,
+    select: (res) => res.data.name,
+  });
 
   return (
     <header className="fixed w-full h-[100px] px-8 bg-[#EBEBEB] flex items-center z-10">
@@ -38,7 +46,7 @@ export const Header = () => {
         </div>
       ) : (
         <span className="font-[WantedSansB] text-[20px] text-[#2C2C2C]">
-          six-standard님의 일기
+          {name || "홍길동"}의 일기
         </span>
       )}
     </header>
