@@ -3,17 +3,44 @@ import { ModalLayout } from "../ModalLayout";
 import { days } from "../../../../utils/date";
 import { Icon } from "@iconify/react";
 import { useModal } from "../../../../hooks/useModal";
-import { data } from "../../../../pages/Home/List/constants";
+import { detail, setTop } from "../../../../apis";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface PropType {
   date: number[];
+  share?: boolean;
 }
 
-export const Detail = ({ date }: PropType) => {
-  const { removeModal } = useModal();
-  const datas = data.find((i) => i.date === date[2]);
+interface itemType {
+  content: string;
+  date: string;
+  id: number;
+  isTop: boolean;
+  writerId: string;
+}
 
-  console.log(datas);
+export const Detail = ({ date, share }: PropType) => {
+  const { removeModal } = useModal();
+  const queryClient = useQueryClient();
+  const dateInLine = date.map((i) => i.toString().padStart(2, "0")).join("");
+
+  const { data } = useQuery({
+    queryKey: ["Detail", dateInLine],
+    queryFn: () => detail(dateInLine),
+    select: (res) => res.data,
+  });
+
+  const { mutate } = useMutation({
+    mutationFn: (id: number) => setTop(dateInLine, id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["list", `${date[0]}-${date[1]}`],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["Detail", dateInLine],
+      });
+    },
+  });
 
   return (
     <ModalLayout>
@@ -29,17 +56,22 @@ export const Detail = ({ date }: PropType) => {
             className="cursor-pointer hover:opacity-50 transition-all duration-150"
           />
         </div>
-        {datas?.texts.map((i, index) => (
-          <div className="font-[WantedSansR] text-[20px] border-[3px] border-[#2C2C2C] w-full px-3 py-2 flex justify-between items-center">
-            <span>{i}</span>
-            <Icon
-              icon="mdi:crown"
-              width={30}
-              color={datas?.first === index ? "#2C2C2C" : "#A8A8A8"}
-              className="cursor-pointer"
-            />
-          </div>
-        ))}
+        <div className="flex flex-col gap-2 h-full overflow-auto">
+          {data?.map((i: itemType) => (
+            <div className="font-[WantedSansR] text-[20px] border-[3px] border-[#2C2C2C] w-full px-3 py-2 flex justify-between items-center">
+              <span>{i.content}</span>
+              {!share && (
+                <Icon
+                  onClick={() => mutate(i.id)}
+                  icon="mdi:crown"
+                  width={30}
+                  color={i.isTop ? "#2C2C2C" : "#A8A8A8"}
+                  className="cursor-pointer"
+                />
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </ModalLayout>
   );
